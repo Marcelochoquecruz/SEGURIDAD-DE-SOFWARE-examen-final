@@ -1,49 +1,50 @@
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class AuthControllerGetx extends GetxController {
+  final FirebaseAuth _auth = FirebaseAuth.instance;
   final email = ''.obs;
   final password = ''.obs;
-  final confirmPassword = ''.obs;
   final isLoading = false.obs;
   final isPasswordVisible = false.obs;
-  final isConfirmPasswordVisible = false.obs;
+  final Rx<User?> user = Rx<User?>(null);
+
+  @override
+  void onInit() {
+    super.onInit();
+    user.bindStream(_auth.authStateChanges());
+  }
 
   void togglePasswordVisibility() {
     isPasswordVisible.value = !isPasswordVisible.value;
   }
 
-  void toggleConfirmPasswordVisibility() {
-    isConfirmPasswordVisible.value = !isConfirmPasswordVisible.value;
-  }
-
   Future<void> login() async {
-    if (password.value != confirmPassword.value) {
+    try {
+      isLoading.value = true;
+      UserCredential userCredential = await _auth.signInWithEmailAndPassword(
+        email: email.value.trim(),
+        password: password.value,
+      );
+      
+      if (userCredential.user != null) {
+        Get.offNamed('/welcome'); // Navigate to welcome screen
+      }
+    } on FirebaseAuthException catch (e) {
+      String errorMessage = 'Error al iniciar sesión';
+      if (e.code == 'user-not-found') {
+        errorMessage = 'No existe usuario con este correo';
+      } else if (e.code == 'wrong-password') {
+        errorMessage = 'Contraseña incorrecta';
+      }
       Get.snackbar(
         'Error',
-        'Las contraseñas no coinciden',
+        errorMessage,
         backgroundColor: Colors.red,
         colorText: Colors.white,
         snackPosition: SnackPosition.BOTTOM,
       );
-      return;
-    }
-
-    try {
-      isLoading.value = true;
-      // Aquí implementaremos la lógica de autenticación
-      await Future.delayed(const Duration(seconds: 2)); // Simulación de carga
-
-      // Por ahora, solo mostraremos un mensaje de éxito
-      Get.snackbar(
-        'Éxito',
-        'Inicio de sesión exitoso',
-        backgroundColor: Colors.green,
-        colorText: Colors.white,
-        snackPosition: SnackPosition.BOTTOM,
-      );
-
-      // TODO: Implementar navegación a dashboard
     } catch (e) {
       Get.snackbar(
         'Error',
@@ -54,6 +55,21 @@ class AuthControllerGetx extends GetxController {
       );
     } finally {
       isLoading.value = false;
+    }
+  }
+
+  Future<void> signOut() async {
+    try {
+      await _auth.signOut();
+      Get.offAllNamed('/');
+    } catch (e) {
+      Get.snackbar(
+        'Error',
+        'Error al cerrar sesión: $e',
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+        snackPosition: SnackPosition.BOTTOM,
+      );
     }
   }
 
@@ -68,6 +84,5 @@ class AuthControllerGetx extends GetxController {
   void clearFields() {
     email.value = '';
     password.value = '';
-    confirmPassword.value = '';
   }
 }

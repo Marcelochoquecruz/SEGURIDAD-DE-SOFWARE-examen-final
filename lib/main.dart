@@ -3,6 +3,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:get/get.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'screens/home_screen.dart';
+import 'screens/admin/welcome_screen.dart';
 import 'firebase_options.dart';
 
 void main() async {
@@ -35,7 +36,11 @@ class MyApp extends StatelessWidget {
           Locale('es', ''),
           Locale('en', ''),
         ],
-        home: const HomeScreen(),
+        initialRoute: '/',
+        getPages: [
+          GetPage(name: '/', page: () => const HomeScreen()),
+          GetPage(name: '/welcome', page: () => WelcomeScreen()),
+        ],
     );
   }
 }

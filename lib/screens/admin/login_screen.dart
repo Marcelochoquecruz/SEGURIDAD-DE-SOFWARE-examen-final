@@ -105,35 +105,6 @@ class LoginScreen extends StatelessWidget {
                                   return null;
                                 },
                               )),
-                              const SizedBox(height: 20),
-                              Obx(() => TextFormField(
-                                onChanged: (value) => controller.confirmPassword.value = value,
-                                obscureText: !controller.isConfirmPasswordVisible.value,
-                                decoration: InputDecoration(
-                                  labelText: 'Confirmar Contraseña',
-                                  prefixIcon: const Icon(Icons.lock_outline),
-                                  suffixIcon: IconButton(
-                                    icon: Icon(
-                                      controller.isConfirmPasswordVisible.value
-                                          ? Icons.visibility_off
-                                          : Icons.visibility,
-                                    ),
-                                    onPressed: controller.toggleConfirmPasswordVisibility,
-                                  ),
-                                  border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(10),
-                                  ),
-                                ),
-                                validator: (value) {
-                                  if (value == null || value.isEmpty) {
-                                    return 'Por favor confirme su contraseña';
-                                  }
-                                  if (value != controller.password.value) {
-                                    return 'Las contraseñas no coinciden';
-                                  }
-                                  return null;
-                                },
-                              )),
                               const SizedBox(height: 30),
                               Obx(() => SizedBox(
                                 width: double.infinity,
