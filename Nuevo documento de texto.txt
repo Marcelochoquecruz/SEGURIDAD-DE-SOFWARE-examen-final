@@ -1,0 +1,8 @@
+programar registro de usuartio
+con todas las seguridades
+inicio de secion con 2 pasos
+SOLUCION voy a inplementar una aplicacion movil
+1.- Realizacion de una app
+2.-Para manejo de estados GetX
+3.- Controles de seguridad en tiempo real de login y crear cuenta
+

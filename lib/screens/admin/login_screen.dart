@@ -78,8 +78,12 @@ class LoginScreen extends StatelessWidget {
                               ),
                               const SizedBox(height: 20),
                               Obx(() => TextFormField(
-                                onChanged: (value) => controller.password.value = value,
+                                onChanged: (value) {
+                                  // Convert to uppercase automatically
+                                  controller.password.value = value.toUpperCase();
+                                },
                                 obscureText: !controller.isPasswordVisible.value,
+                                textCapitalization: TextCapitalization.characters,
                                 decoration: InputDecoration(
                                   labelText: 'Contraseña',
                                   prefixIcon: const Icon(Icons.lock),
@@ -94,13 +98,17 @@ class LoginScreen extends StatelessWidget {
                                   border: OutlineInputBorder(
                                     borderRadius: BorderRadius.circular(10),
                                   ),
+                                  helperText: 'Máximo 8 caracteres, solo mayúsculas',
                                 ),
                                 validator: (value) {
                                   if (value == null || value.isEmpty) {
                                     return 'Por favor ingrese su contraseña';
                                   }
-                                  if (!controller.validatePassword(value)) {
-                                    return 'La contraseña debe tener al menos 6 caracteres';
+                                  if (value.length > 8) {
+                                    return 'La contraseña debe tener máximo 8 caracteres';
+                                  }
+                                  if (!RegExp(r'^[A-Z]+$').hasMatch(value)) {
+                                    return 'Solo se permiten letras mayúsculas';
                                   }
                                   return null;
                                 },
@@ -108,9 +116,9 @@ class LoginScreen extends StatelessWidget {
                               const SizedBox(height: 30),
                               Obx(() => SizedBox(
                                 width: double.infinity,
+                                height: 50,
                                 child: ElevatedButton(
                                   style: ElevatedButton.styleFrom(
-                                    padding: const EdgeInsets.symmetric(vertical: 15),
                                     shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(10),
                                     ),
