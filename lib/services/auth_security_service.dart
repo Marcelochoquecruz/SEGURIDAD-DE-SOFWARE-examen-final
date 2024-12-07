@@ -16,6 +16,7 @@ class AuthSecurityService {
   // Variable observable para el estado de bloqueo
   final isLoginLocked = false.obs;
   final remainingTime = 0.obs;
+  final showCaptcha = false.obs;
 
   Timer? _lockTimer;
 
@@ -56,6 +57,7 @@ class AuthSecurityService {
     _isLocked = false;
     isLoginLocked.value = false;
     remainingTime.value = 0;
+    showCaptcha.value = false;
     _lastFailedAttempt = null;
     _lockTimer?.cancel();
   }
@@ -64,10 +66,16 @@ class AuthSecurityService {
     _resetAttempts();
   }
 
+  void resetCaptcha() {
+    showCaptcha.value = false;
+  }
+
   void incrementAttempts() {
     _loginAttempts++;
     if (_loginAttempts >= maxAttempts) {
       lockLogin();
+    } else if (_loginAttempts > 0) {
+      showCaptcha.value = true;
     }
   }
 

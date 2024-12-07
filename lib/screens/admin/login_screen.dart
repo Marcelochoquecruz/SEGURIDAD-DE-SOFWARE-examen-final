@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:animate_do/animate_do.dart';
 import 'package:get/get.dart';
+import 'package:flutter_captcha/flutter_captcha.dart';
 import '../../controllers/auth_controller_getx.dart';
 
 class LoginScreen extends StatelessWidget {
@@ -105,6 +106,16 @@ class LoginScreen extends StatelessWidget {
                                 return null;
                               },
                             )),
+                            Obx(() => controller._securityService.showCaptcha.value
+                                ? Padding(
+                                    padding: const EdgeInsets.only(bottom: 20),
+                                    child: FlutterCaptcha(
+                                      onSuccess: () {
+                                        controller._securityService.resetCaptcha();
+                                      },
+                                    ),
+                                  )
+                                : const SizedBox()),
                             const SizedBox(height: 20),
                             Obx(() => Text(
                               controller.loginMessage.value,
