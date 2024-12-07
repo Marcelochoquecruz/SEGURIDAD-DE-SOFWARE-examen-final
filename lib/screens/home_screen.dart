@@ -111,7 +111,7 @@ class HomeScreen extends StatelessWidget {
                     FadeInDown(
                       delay: const Duration(milliseconds: 1100),
                       child: Text(
-                        'Fecha de presentación: ${DateTime.now().day}/${DateTime.now().month}/${DateTime.now().year} ${DateTime.now().hour}:${DateTime.now().minute}',
+                        'Fecha y hora actual: ${DateTime.now().day}/${DateTime.now().month}/${DateTime.now().year} ${DateTime.now().hour}:${DateTime.now().minute}',
                         style: const TextStyle(
                           fontSize: 18,
                           color: Colors.white70,

@@ -4,9 +4,9 @@ import '../../controllers/auth_controller_getx.dart';
 import 'package:animate_do/animate_do.dart';
 
 class SignUpScreen extends StatelessWidget {
-  SignUpScreen({super.key});
+  SignUpScreen({Key? key}) : super(key: key);
 
-  final AuthControllerGetx controller = Get.find<AuthControllerGetx>();
+  final AuthControllerGetx controller = Get.put(AuthControllerGetx());
   final _formKey = GlobalKey<FormState>();
 
   @override
@@ -59,6 +59,12 @@ class SignUpScreen extends StatelessWidget {
                                 ),
                                 const SizedBox(height: 20),
                                 Obx(() => TextFormField(
+                                  validator: (value) {
+                                    if (value == null || value.isEmpty) {
+                                      return 'Por favor ingresa tu nombre';
+                                    }
+                                    return null;
+                                  },
                                   onChanged: (value) => controller.name.value = value,
                                   decoration: InputDecoration(
                                     labelText: 'Nombre Completo',
@@ -71,6 +77,12 @@ class SignUpScreen extends StatelessWidget {
                                 )),
                                 const SizedBox(height: 20),
                                 Obx(() => TextFormField(
+                                  validator: (value) {
+                                    if (value == null || value.isEmpty || !value.contains('@')) {
+                                      return 'Por favor ingresa un correo electrónico válido';
+                                    }
+                                    return null;
+                                  },
                                   onChanged: (value) => controller.email.value = value,
                                   decoration: InputDecoration(
                                     labelText: 'Correo electrónico',
@@ -83,6 +95,12 @@ class SignUpScreen extends StatelessWidget {
                                 )),
                                 const SizedBox(height: 20),
                                 Obx(() => TextFormField(
+                                  validator: (value) {
+                                    if (value == null || value.length < 8) {
+                                      return 'La contraseña debe tener al menos 8 caracteres';
+                                    }
+                                    return null;
+                                  },
                                   onChanged: (value) => controller.password.value = value,
                                   obscureText: !controller.isPasswordVisible.value,
                                   decoration: InputDecoration(
@@ -104,6 +122,12 @@ class SignUpScreen extends StatelessWidget {
                                 )),
                                 const SizedBox(height: 20),
                                 Obx(() => TextFormField(
+                                  validator: (value) {
+                                    if (value != controller.password.value) {
+                                      return 'Las contraseñas no coinciden';
+                                    }
+                                    return null;
+                                  },
                                   onChanged: (value) => controller.confirmPassword.value = value,
                                   obscureText: !controller.isConfirmPasswordVisible.value,
                                   decoration: InputDecoration(
@@ -124,56 +148,51 @@ class SignUpScreen extends StatelessWidget {
                                   ),
                                 )),
                                 const SizedBox(height: 30),
-                                Obx(() => SizedBox(
-                                  width: double.infinity,
-                                  child: ElevatedButton(
-                                    style: ElevatedButton.styleFrom(
-                                      padding: const EdgeInsets.symmetric(vertical: 15),
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(10),
-                                      ),
-                                      backgroundColor: (controller.isEmailValid.value && 
+                                Obx(() => ElevatedButton(
+                                  style: ElevatedButton.styleFrom(
+                                    minimumSize: const Size(double.infinity, 50),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(10),
+                                    ),
+                                    backgroundColor: (controller.isEmailValid.value && 
                                                       controller.isPasswordValid.value &&
                                                       controller.isNameValid.value &&
                                                       controller.isConfirmPasswordValid.value)
                                           ? Colors.blue
                                           : Colors.grey,
-                                    ),
-                                    onPressed: (controller.isEmailValid.value && 
-                                               controller.isPasswordValid.value &&
-                                               controller.isNameValid.value &&
-                                               controller.isConfirmPasswordValid.value)
-                                        ? () => controller.signUp()
-                                        : null,
-                                    child: controller.isLoading.value
-                                        ? const SizedBox(
-                                            height: 20,
-                                            width: 20,
-                                            child: CircularProgressIndicator(
-                                              color: Colors.white,
-                                              strokeWidth: 2,
-                                            ),
-                                          )
-                                        : const Text(
-                                            'Crear Cuenta',
-                                            style: TextStyle(
-                                              fontSize: 18,
-                                              color: Colors.white,
-                                            ),
-                                          ),
                                   ),
+                                  onPressed: controller.isLoading.value
+                                      ? null
+                                      : () {
+                                          if (_formKey.currentState!.validate()) {
+                                            controller.signUp();
+                                          }
+                                        },
+                                  child: controller.isLoading.value
+                                      ? const CircularProgressIndicator()
+                                      : const Text(
+                                          'Crear Cuenta',
+                                          style: TextStyle(fontSize: 18),
+                                        ),
                                 )),
                                 const SizedBox(height: 20),
-                                TextButton.icon(
-                                  onPressed: () {
-                                    controller.clearFields();
-                                    Get.back();
-                                  },
-                                  icon: const Icon(
-                                    Icons.arrow_back,
-                                    size: 20,
-                                  ),
-                                  label: const Text('Volver al Login'),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    const Text(
+                                      '¿Ya tienes una cuenta?',
+                                      style: TextStyle(color: Colors.grey),
+                                    ),
+                                    TextButton(
+                                      onPressed: () => Get.back(),
+                                      child: const Text(
+                                        'Iniciar Sesión',
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ],
                             ),
@@ -183,7 +202,7 @@ class SignUpScreen extends StatelessWidget {
                     ),
                   ],
                 ),
-             ),
+              ),
             ),
           ),
         ),

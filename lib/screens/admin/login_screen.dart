@@ -30,116 +30,131 @@ class LoginScreen extends StatelessWidget {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  FadeInDown(
-                    child: Card(
-                      elevation: 8,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(15),
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.all(32.0),
-                        child: Form(
-                          key: _formKey,
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              const Icon(
-                                Icons.admin_panel_settings,
-                                size: 80,
-                                color: Colors.blue,
+                  Card(
+                    elevation: 8,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(15),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(32.0),
+                      child: Form(
+                        key: _formKey,
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const Icon(
+                              Icons.admin_panel_settings,
+                              size: 80,
+                              color: Colors.blue,
+                            ),
+                            const SizedBox(height: 20),
+                            const Text(
+                              'Acceso Administrativo',
+                              style: TextStyle(
+                                fontSize: 24,
+                                fontWeight: FontWeight.bold,
                               ),
-                              const SizedBox(height: 20),
-                              const Text(
-                                'Acceso Administrativo',
-                                style: TextStyle(
-                                  fontSize: 24,
-                                  fontWeight: FontWeight.bold,
+                            ),
+                            const SizedBox(height: 20),
+                            TextFormField(
+                              onChanged: (value) => controller.email.value = value,
+                              decoration: InputDecoration(
+                                labelText: 'Correo electrónico',
+                                prefixIcon: const Icon(Icons.email),
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(10),
                                 ),
                               ),
-                              const SizedBox(height: 20),
-                              TextFormField(
-                                onChanged: (value) => controller.email.value = value,
-                                decoration: InputDecoration(
-                                  labelText: 'Correo electrónico',
-                                  prefixIcon: const Icon(Icons.email),
-                                  border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(10),
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'Por favor ingrese su correo';
+                                }
+                                if (!controller.validateEmail(value)) {
+                                  return 'Por favor ingrese un correo válido';
+                                }
+                                return null;
+                              },
+                            ),
+                            const SizedBox(height: 20),
+                            Obx(() => TextFormField(
+                              onChanged: (value) => controller.password.value = value,
+                              obscureText: !controller.isPasswordVisible.value,
+                              decoration: InputDecoration(
+                                labelText: 'Contraseña',
+                                prefixIcon: const Icon(Icons.lock),
+                                suffixIcon: IconButton(
+                                  icon: Icon(
+                                    controller.isPasswordVisible.value
+                                        ? Icons.visibility_off
+                                        : Icons.visibility,
                                   ),
+                                  onPressed: controller.togglePasswordVisibility,
                                 ),
-                                validator: (value) {
-                                  if (value == null || value.isEmpty) {
-                                    return 'Por favor ingrese su correo';
-                                  }
-                                  if (!controller.validateEmail(value)) {
-                                    return 'Por favor ingrese un correo válido';
-                                  }
-                                  return null;
-                                },
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                                errorText: controller.passwordError.value,
                               ),
-                              const SizedBox(height: 20),
-                              Obx(() => TextFormField(
-                                onChanged: (value) {
-                                  // Convert to uppercase automatically
-                                  controller.password.value = value.toUpperCase();
-                                },
-                                obscureText: !controller.isPasswordVisible.value,
-                                textCapitalization: TextCapitalization.characters,
-                                decoration: InputDecoration(
-                                  labelText: 'Contraseña',
-                                  prefixIcon: const Icon(Icons.lock),
-                                  suffixIcon: IconButton(
-                                    icon: Icon(
-                                      controller.isPasswordVisible.value
-                                          ? Icons.visibility_off
-                                          : Icons.visibility,
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'Por favor ingrese su contraseña';
+                                }
+                                if (value.length > 8) {
+                                  return 'La contraseña debe tener máximo 8 caracteres';
+                                }
+                                return null;
+                              },
+                            )),
+                            const SizedBox(height: 20),
+                            Obx(() => Text(
+                              controller.loginMessage.value,
+                              style: const TextStyle(
+                                color: Colors.red,
+                                fontSize: 14,
+                              ),
+                            )),
+                            const SizedBox(height: 20),
+                            Obx(() => ElevatedButton(
+                              onPressed: controller.isLoginButtonEnabled.value
+                                  ? () async {
+                                      if (_formKey.currentState!.validate()) {
+                                        await controller.login();
+                                      }
+                                    }
+                                  : null,
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.white,
+                                foregroundColor: Colors.blue.shade900,
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 50,
+                                  vertical: 15,
+                                ),
+                              ),
+                              child: const Text(
+                                'Iniciar Sesión',
+                                style: TextStyle(fontSize: 18),
+                              ),
+                            )),
+                            const SizedBox(height: 20),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                const Text(
+                                  '¿No tienes una cuenta?',
+                                  style: TextStyle(color: Colors.grey),
+                                ),
+                                TextButton(
+                                  onPressed: () => Get.toNamed('/signup'),
+                                  child: const Text(
+                                    'Crear cuenta',
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
                                     ),
-                                    onPressed: controller.togglePasswordVisibility,
                                   ),
-                                  border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(10),
-                                  ),
-                                  helperText: 'Máximo 8 caracteres, solo mayúsculas',
                                 ),
-                                validator: (value) {
-                                  if (value == null || value.isEmpty) {
-                                    return 'Por favor ingrese su contraseña';
-                                  }
-                                  if (value.length > 8) {
-                                    return 'La contraseña debe tener máximo 8 caracteres';
-                                  }
-                                  if (!RegExp(r'^[A-Z]+$').hasMatch(value)) {
-                                    return 'Solo se permiten letras mayúsculas';
-                                  }
-                                  return null;
-                                },
-                              )),
-                              const SizedBox(height: 30),
-                              Obx(() => SizedBox(
-                                width: double.infinity,
-                                height: 50,
-                                child: ElevatedButton(
-                                  style: ElevatedButton.styleFrom(
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(10),
-                                    ),
-                                  ),
-                                  onPressed: controller.isLoading.value
-                                      ? null
-                                      : () {
-                                          if (_formKey.currentState!.validate()) {
-                                            controller.login();
-                                          }
-                                        },
-                                  child: controller.isLoading.value
-                                      ? const CircularProgressIndicator()
-                                      : const Text(
-                                          'Iniciar Sesión',
-                                          style: TextStyle(fontSize: 18),
-                                        ),
-                                ),
-                              )),
-                            ],
-                          ),
+                              ],
+                            ),
+                          ],
                         ),
                       ),
                     ),
